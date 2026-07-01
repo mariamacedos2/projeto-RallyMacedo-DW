@@ -1,18 +1,49 @@
+import { AppError } from "../../errors/AppError.js";
+
 export class LivroService {
   constructor(repository) {
     this.repository = repository;
   }
 
-  listarLivros() {
-    return this.repository.findAll();
+  async listar() {
+    return await this.repository.findAll();
   }
 
-  criarLivro(data) {
-    const livro = {
-      id: Date.now(),
-      ...data
-    };
+  async buscarPorId(id) {
+    const livro = await this.repository.findById(id);
 
-    return this.repository.create(livro);
+    if (!livro) {
+      throw new AppError("Livro não encontrado", 404);
+    }
+
+    return livro;
+  }
+
+  async criar(data) {
+    if (!data.titulo || !data.autor) {
+      throw new AppError("Título e autor são obrigatórios", 400);
+    }
+
+    return await this.repository.create(data);
+  }
+
+  async atualizar(id, data) {
+    const livro = await this.repository.findById(id);
+
+    if (!livro) {
+      throw new AppError("Livro não encontrado", 404);
+    }
+
+    return await this.repository.update(id, data);
+  }
+
+  async deletar(id) {
+    const livro = await this.repository.findById(id);
+
+    if (!livro) {
+      throw new AppError("Livro não encontrado", 404);
+    }
+
+    await this.repository.delete(id);
   }
 }
