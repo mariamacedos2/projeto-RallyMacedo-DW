@@ -15,4 +15,24 @@ export async function usuarioRoutes(fastify) {
     controller.findAll.bind(controller)
   );
 
+  fastify.get(
+    "/usuarios/:id",
+    controller.findById.bind(controller)
+  );
+
+  fastify.post(
+    "/usuarios",
+    controller.create.bind(controller)
+  );
+
+  fastify.patch(
+    "/usuarios/:id",
+    controller.update.bind(controller)
+  );
+
+  fastify.delete(
+    "/usuarios/:id",
+    controller.delete.bind(controller)
+  );
+
 }

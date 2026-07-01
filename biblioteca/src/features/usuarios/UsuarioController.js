@@ -10,6 +10,62 @@ export class UsuarioController {
       await this.service.findAll();
 
     return reply.send(usuarios);
+
+  }
+
+  async findById(request, reply) {
+
+    const { id } = request.params;
+
+    const usuario =
+      await this.service.findById(id);
+
+    return reply.send(usuario);
+
+  }
+
+  async create(request, reply) {
+
+    const { nome, email } = request.body;
+
+    const usuario =
+      await this.service.create(
+        nome,
+        email
+      );
+
+    return reply
+      .status(201)
+      .send(usuario);
+
+  }
+
+  async update(request, reply) {
+
+    const { id } = request.params;
+
+    const { nome, email } =
+      request.body;
+
+    const usuario =
+      await this.service.update(
+        id,
+        nome,
+        email
+      );
+
+    return reply.send(usuario);
+
+  }
+
+  async delete(request, reply) {
+
+    const { id } = request.params;
+
+    await this.service.delete(id);
+
+    return reply.status(204).send();
+
   }
 
 }
