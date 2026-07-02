@@ -35,7 +35,7 @@ export class UsuarioController {
       );
 
     return reply
-      .status(201)
+      .code(201)
       .send(usuario);
 
   }
@@ -64,7 +64,7 @@ export class UsuarioController {
 
     await this.service.delete(id);
 
-    return reply.status(204).send();
+    return reply.code(204).send();
 
   }
 

@@ -9,38 +9,40 @@ export class EmprestimoService {
 
   async criar({ usuarioId, livroId }) {
 
+    // 1. validar usuário
     const usuario = await this.usuarioRepo.findById(usuarioId);
     if (!usuario) {
       throw new AppError("Usuário não encontrado", 404);
     }
 
+    // 2. validar livro
     const livro = await this.livroRepo.findById(livroId);
     if (!livro) {
       throw new AppError("Livro não encontrado", 404);
     }
 
-    if (!livro.disponivel) {
-      throw new AppError("Livro já está emprestado", 400);
+    // 3. regra de negócio (estoque)
+    if (livro.quantidade <= 0) {
+      throw new AppError("Livro sem estoque disponível", 400);
     }
 
-    // cria empréstimo
+    // 4. criar empréstimo
     const emprestimo = await this.emprestimoRepo.create({ usuarioId });
 
-    // relaciona livro
+    // 5. relacionar livro
     await this.emprestimoRepo.addLivro(emprestimo.id, livroId);
 
-    // marca livro como indisponível
-    await this.livroRepo.update(livroId, {
-      titulo: livro.titulo,
-      autor: livro.autor,
-      disponivel: false
-    });
+    // 6. diminuir quantidade
+    await this.livroRepo.updateQuantidade(
+      livroId,
+      livro.quantidade - 1
+    );
 
     return emprestimo;
   }
 
   async listar() {
-    return await this.emprestimoRepo.findAll();
+    return this.emprestimoRepo.findAll();
   }
 
   async buscarDetalhado(id) {

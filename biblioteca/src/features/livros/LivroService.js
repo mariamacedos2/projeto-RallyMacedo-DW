@@ -6,7 +6,7 @@ export class LivroService {
   }
 
   async listar() {
-    return await this.repository.findAll();
+    return this.repository.findAll();
   }
 
   async buscarPorId(id) {
@@ -24,26 +24,20 @@ export class LivroService {
       throw new AppError("Título e autor são obrigatórios", 400);
     }
 
-    return await this.repository.create(data);
+    return this.repository.create(data);
   }
 
-  async atualizar(id, data) {
+  async reduzirQuantidade(id) {
     const livro = await this.repository.findById(id);
 
     if (!livro) {
       throw new AppError("Livro não encontrado", 404);
     }
 
-    return await this.repository.update(id, data);
-  }
-
-  async deletar(id) {
-    const livro = await this.repository.findById(id);
-
-    if (!livro) {
-      throw new AppError("Livro não encontrado", 404);
+    if (livro.quantidade <= 0) {
+      throw new AppError("Livro sem estoque", 400);
     }
 
-    await this.repository.delete(id);
+    return this.repository.updateQuantidade(id, livro.quantidade - 1);
   }
 }

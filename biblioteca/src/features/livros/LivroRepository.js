@@ -3,7 +3,7 @@ import { pool } from "../../config/database.js";
 export class LivroRepository {
 
   async findAll() {
-    const result = await pool.query("SELECT * FROM livros");
+    const result = await pool.query("SELECT * FROM livros ORDER BY id");
     return result.rows;
   }
 
@@ -17,22 +17,22 @@ export class LivroRepository {
 
   async create(livro) {
     const result = await pool.query(
-      `INSERT INTO livros (titulo, autor, disponivel)
+      `INSERT INTO livros (titulo, autor, quantidade)
        VALUES ($1, $2, $3)
        RETURNING *`,
-      [livro.titulo, livro.autor, true]
+      [livro.titulo, livro.autor, livro.quantidade || 1]
     );
+
     return result.rows[0];
   }
 
-  async update(id, data) {
+  async updateQuantidade(id, quantidade) {
     const result = await pool.query(
       `UPDATE livros
-       SET titulo = COALESCE($1, titulo),
-           autor = COALESCE($2, autor)
-       WHERE id = $3
+       SET quantidade = $1
+       WHERE id = $2
        RETURNING *`,
-      [data.titulo, data.autor, id]
+      [quantidade, id]
     );
 
     return result.rows[0];
