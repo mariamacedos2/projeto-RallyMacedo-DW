@@ -26,6 +26,20 @@ export class LivroRepository {
     return result.rows[0];
   }
 
+  async update(id, livro) {
+  const result = await pool.query(
+    `UPDATE livros
+     SET titulo = $1,
+         autor = $2,
+         quantidade = $3
+     WHERE id = $4
+     RETURNING *`,
+    [livro.titulo, livro.autor, livro.quantidade, id]
+  );
+
+  return result.rows[0];
+}
+
   async updateQuantidade(id, quantidade) {
     const result = await pool.query(
       `UPDATE livros

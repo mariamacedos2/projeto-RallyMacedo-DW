@@ -17,4 +17,14 @@ export class EmprestimoController {
     const dados = await this.service.buscarDetalhado(req.params.id);
     return reply.send(dados);
   };
+
+  update = async (req, reply) => {
+    const emprestimo = await this.service.atualizar(req.params.id, req.body);
+    return reply.send(emprestimo);
+  };
+
+  delete = async (req, reply) => {
+    await this.service.deletar(req.params.id);
+    return reply.code(204).send();
+  };
 }

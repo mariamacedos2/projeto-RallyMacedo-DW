@@ -29,6 +29,24 @@ export class EmprestimoRepository {
     return result.rows;
   }
 
+  async findById(id) {
+    const result = await pool.query(
+      "SELECT * FROM emprestimos WHERE id = $1",
+      [id]
+    );
+
+    return result.rows[0];
+  }
+
+  async findLivrosByEmprestimo(id) {
+    const result = await pool.query(
+      "SELECT livro_id FROM emprestimo_livros WHERE emprestimo_id = $1",
+      [id]
+    );
+
+    return result.rows;
+  }
+
   async findDetalhado(id) {
     const result = await pool.query(`
       SELECT
@@ -45,5 +63,29 @@ export class EmprestimoRepository {
     `, [id]);
 
     return result.rows;
+  }
+
+  async update(id, usuarioId) {
+    const result = await pool.query(
+      `UPDATE emprestimos
+       SET usuario_id = $1
+       WHERE id = $2
+       RETURNING *`,
+      [usuarioId, id]
+    );
+
+    return result.rows[0];
+  }
+
+  async delete(id) {
+    await pool.query(
+      "DELETE FROM emprestimo_livros WHERE emprestimo_id = $1",
+      [id]
+    );
+
+    await pool.query(
+      "DELETE FROM emprestimos WHERE id = $1",
+      [id]
+    );
   }
 }
