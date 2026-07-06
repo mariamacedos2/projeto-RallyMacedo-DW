@@ -2,12 +2,20 @@ import { UsuarioRepository } from "./UsuarioRepository.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { UsuarioController } from "./UsuarioController.js";
 
+const errorResponse = {
+  type: "object",
+  properties: {
+    statusCode: { type: "integer" },
+    message: { type: "string" }
+  }
+};
+
 export async function usuarioRoutes(fastify) {
   const repository = new UsuarioRepository();
   const service = new UsuarioService(repository);
   const controller = new UsuarioController(service);
 
-  // 📌 LISTAR USUÁRIOS
+  
   fastify.get(
     "/usuarios",
     {
@@ -32,7 +40,7 @@ export async function usuarioRoutes(fastify) {
     controller.findAll.bind(controller)
   );
 
-  // 📌 BUSCAR POR ID
+  
   fastify.get(
     "/usuarios/:id",
     {
@@ -53,14 +61,15 @@ export async function usuarioRoutes(fastify) {
               nome: { type: "string" },
               email: { type: "string" }
             }
-          }
+          },
+          404: errorResponse
         }
       }
     },
     controller.findById.bind(controller)
   );
 
-  // 📌 CRIAR USUÁRIO
+  
   fastify.post(
     "/usuarios",
     {
@@ -83,14 +92,15 @@ export async function usuarioRoutes(fastify) {
               nome: { type: "string" },
               email: { type: "string" }
             }
-          }
+          },
+          400: errorResponse
         }
       }
     },
     controller.create.bind(controller)
   );
 
-  // 📌 ATUALIZAR USUÁRIO
+  
   fastify.patch(
     "/usuarios/:id",
     {
@@ -109,13 +119,25 @@ export async function usuarioRoutes(fastify) {
             nome: { type: "string" },
             email: { type: "string" }
           }
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              nome: { type: "string" },
+              email: { type: "string" }
+            }
+          },
+          400: errorResponse,
+          404: errorResponse
         }
       }
     },
     controller.update.bind(controller)
   );
 
-  // 📌 DELETAR USUÁRIO
+  
   fastify.delete(
     "/usuarios/:id",
     {
@@ -131,7 +153,8 @@ export async function usuarioRoutes(fastify) {
         response: {
           204: {
             type: "null"
-          }
+          },
+          404: errorResponse
         }
       }
     },

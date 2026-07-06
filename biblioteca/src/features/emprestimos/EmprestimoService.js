@@ -54,4 +54,36 @@ export class EmprestimoService {
 
     return dados;
   }
+
+  async atualizar(id, { usuarioId }) {
+
+    const emprestimo = await this.emprestimoRepo.findById(id);
+
+    if (!emprestimo) {
+      throw new AppError("Empréstimo não encontrado", 404);
+    }
+
+    if (!usuarioId) {
+      throw new AppError("usuarioId é obrigatório", 400);
+    }
+
+    const usuario = await this.usuarioRepo.findById(usuarioId);
+
+    if (!usuario) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    return this.emprestimoRepo.update(id, usuarioId);
+  }
+
+  async deletar(id) {
+
+    const emprestimo = await this.emprestimoRepo.findById(id);
+
+    if (!emprestimo) {
+      throw new AppError("Empréstimo não encontrado", 404);
+    }
+
+    await this.emprestimoRepo.delete(id);
+  }
 }
